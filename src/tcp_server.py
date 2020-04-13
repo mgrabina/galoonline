@@ -37,4 +37,7 @@ def recv_msg(connection):
 
 def send_msg(connection, msg):
     connection.send(msg.encode())
+
+
+def close_connection(connection):
     connection.close()
