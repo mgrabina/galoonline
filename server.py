@@ -1,4 +1,6 @@
 #!/usr/bin/python
+import threading
+from concurrent.futures.thread import ThreadPoolExecutor
 
 from src import tcp_server
 from src import game
@@ -6,6 +8,7 @@ from src import game
 
 def client_handler(client):
     while True:
+
         msg = tcp_server.recv_msg(client).split(game.command_separator)
         # Validate Command
         if game.validate_command(msg):
@@ -16,7 +19,8 @@ def client_handler(client):
             tcp_server.send_msg(client, game.error_msg_prefix + "Please register first.")
             continue
         # Then execute game action
-        game.commands_handler.get(msg[0].lower())(client, msg)
+
+        threading.Thread(target=game.commands_handler.get(msg[0].lower()), args=(client, msg,)).start()
 
 
 server = tcp_server.start_server()
