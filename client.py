@@ -11,6 +11,7 @@ last_update = time.time()
 print(last_update)
 interval = 0.5
 push_started = False
+entries = 0
 
 available_commands_string = "Available commands:\n" \
                             "- I AM <username> : register\n" \
@@ -36,7 +37,11 @@ def push_notification(client_conn):
             print("some error")
         time.sleep(1)
 
+
+
+
 while True:
+
     command = input()
     tcp_client.send_msg(client, command)
     response = tcp_client.recv_response(client)
@@ -49,3 +54,4 @@ while True:
     print(response)
     if "exit" in command:
         exit(0)
+

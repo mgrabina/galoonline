@@ -2,6 +2,7 @@
 
 from src import tcp_server
 import queue
+import itertools
 
 connections = {}
 players_statuses = {}
@@ -9,6 +10,10 @@ requests = {}
 responses_queues = {}
 command_separator = ' '
 error_msg_prefix = "Oops! "
+board = {'1': ' ', '2': ' ', '3': ' ', '4': ' ', '5': ' ', '6': ' ', '7': ' ', '8': ' ', '9': ' '}
+positions = {}
+symbols = {}
+
 
 
 def push(client, msg):
@@ -24,7 +29,7 @@ def validate_registration(client, msg):
 
 
 def validate_command(msg):
-    return msg[0] not in valid_commands
+    return msg[0].lower() not in valid_commands
 
 
 def find_connection(username):
@@ -44,12 +49,11 @@ def parse_dic(dic):
 def register_new_player(client, msg):
     # TODO: Validate msg format
     username = msg[2]
-    msg_to_client = 'HELLO ' + username
+    msg_to_client = "HELLO " + username + "\n"
     connections[client] = username
     responses_queues[username] = queue.Queue()
     players_statuses[username] = "READY"
     tcp_server.send_msg(client, msg_to_client)
-    print(client)
 
 
 def check_status(client, msg):
@@ -84,7 +88,8 @@ def accept_game(client, msg):
     players_statuses[connections[client]] = "BUSY"
     players_statuses[requester] = "BUSY"
     tcp_server.send_msg(client, "Game against " + requester + " is about to start!")
-    responses_queues[requester].put("Game against " + connections[client] + " is about to start!")
+    responses_queues[requester].put("Game against " + connections[client] + " is about to start! \n")
+    start_game(client, requester)
 
 
 def decline_game(client, msg):
@@ -94,9 +99,122 @@ def decline_game(client, msg):
         responses_queues[requester].put(connections[client] + " didn’t accept the request or is busy")
 
 
+def start_game(client, requester):
+    # not yet implemented
+    # aux = [requester, connections[client]]
+    # starter = random.choice(aux)
+    symbols[requester] = 'X'
+    symbols[connections[client]] = 'O'
+    tcp_server.send_msg(client, "\n" + connections[client] + "'s turn \n")
+    tcp_server.send_msg(find_connection(requester), "\n" + connections[client] + "'s turn \n")
+
+
+def turns(client):
+    players = symbols.keys()
+    for player in players:
+        if player == connections[client]:
+            tcp_server.send_msg(client, "\n" + connections[player] + "'s turn \n")
+        else:
+            responses_queues[player].put("\n" + connections[player] + "'s turn \n")
+           # tcp_server.send_msg(find_connection(player), "\n" + connections[client] + "'s turn \n")
+
+
+
+def show_board():
+    players = symbols.keys()
+    for player in players:
+        tcp_server.send_msg(find_connection(player), board_str())
+
+
+def board_str():
+    str = ""
+    str += ("\n" + board['1'] + '|' + board['2'] + '|' + board['3'] + "\n"
+            + "-----\n"
+            + board['4'] + '|' + board['5'] + '|' + board['6'] + "\n"
+            + '-----\n' +
+            board['7'] + '|' + board['8'] + '|' + board['9'] + "\n")
+    return str
+
+
 def new_move(client, msg):
-    # TODO: Develop function
-    print("")
+    row = msg[1]
+    col = msg[2]
+    played = 0
+
+    if row == "1":
+        if col == "1":
+            if board['1'] == ' ':
+                positions[connections[client]] = 1
+                board['1'] = symbols[connections[client]]
+                played = 1
+
+        if col == "2":
+            if board['2'] == ' ':
+                positions[connections[client]] = 2
+                board['2'] = symbols[connections[client]]
+                played = 1
+
+        if col == "3":
+            if board['3'] == ' ':
+                positions[connections[client]] = 3
+                board['3'] = symbols[connections[client]]
+                played = 1
+    if row == "2":
+        if col == "1":
+            if board['4'] == ' ':
+                positions[connections[client]] = 4
+                board['4'] = symbols[connections[client]]
+                played = 1
+
+        if col == "2":
+            if board['5'] == ' ':
+                positions[connections[client]] = 5
+                board['5'] = symbols[connections[client]]
+                played = 1
+
+        if col == "3":
+            if board['6'] == ' ':
+                positions[connections[client]] = 6
+                board['6'] = symbols[connections[client]]
+                played = 1
+    if row == "3":
+        if col == "1":
+            if board['7'] == ' ':
+                positions[connections[client]] = 7
+                board['7'] = symbols[connections[client]]
+                played = 1
+
+        if col == "2":
+            if board['8'] == ' ':
+                positions[connections[client]] = 8
+                board['8'] = symbols[connections[client]]
+                played = 1
+
+        if col == "3":
+            if board['9'] == ' ':
+                positions[connections[client]] = 9
+                board['9'] = symbols[connections[client]]
+                played = 1
+    if played == 0:
+        tcp_server.send_msg(client, "Invalid play \n")
+    show_board()
+    turns(client)
+
+
+
+def clean_board():
+    for key in board:
+        board[key] = ' '
+
+
+def clean_positions():
+    for key in positions:
+        positions[key] = ' '
+
+
+def clean_symbols():
+    for key in symbols:
+        symbols[key] = ' '
 
 
 def logout(client, msg):

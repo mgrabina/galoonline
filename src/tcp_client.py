@@ -3,7 +3,7 @@
 import socket
 
 server_ip = '127.0.0.1'
-server_port = 9997
+server_port = 9998
 response_buffer_size = 4096;  # Recommended size
 hostname, sld, tld, port = 'www', 'tecnico', 'ulisboa.pt', 80
 target = '{}.{}.{}'.format(hostname, sld, tld)
