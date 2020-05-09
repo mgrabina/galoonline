@@ -4,7 +4,7 @@ import socket, sys
 import threading
 
 bind_ip = '127.0.0.1'
-bind_port = 9999
+bind_port = 9994
 msg_buffer = 1024
 
 

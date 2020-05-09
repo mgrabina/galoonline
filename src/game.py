@@ -119,6 +119,8 @@ def turns(client):
         if player != connections[client]:
             tcp_server.send_msg(client, "\n" + player + "'s turn \n")
             tcp_server.send_msg(find_connection(player), "\nYour turn \n")
+            active[player] = "true"
+            active[connections[client]] = "false"
 
 
 def show_board():
@@ -143,82 +145,90 @@ def new_move(client, msg):
     played = 0
     global plays
     if symbols:
-        if row == "1":
-            if col == "1":
-                if board['1'] == ' ':
-                    positions[connections[client]] = 1
-                    board['1'] = symbols[connections[client]]
-                    played = 1
+        if active[connections[client]] == "true":
+            if row == "1":
+                if col == "1":
+                    if board['1'] == ' ':
+                        positions[connections[client]] = 1
+                        board['1'] = symbols[connections[client]]
+                        played = 1
 
-            elif col == "2":
-                if board['2'] == ' ':
-                    positions[connections[client]] = 2
-                    board['2'] = symbols[connections[client]]
-                    played = 1
+                elif col == "2":
+                    if board['2'] == ' ':
+                        positions[connections[client]] = 2
+                        board['2'] = symbols[connections[client]]
+                        played = 1
 
-            elif col == "3":
-                if board['3'] == ' ':
-                    positions[connections[client]] = 3
-                    board['3'] = symbols[connections[client]]
-                    played = 1
-        elif row == "2":
-            if col == "1":
-                if board['4'] == ' ':
-                    positions[connections[client]] = 4
-                    board['4'] = symbols[connections[client]]
-                    played = 1
+                elif col == "3":
+                    if board['3'] == ' ':
+                        positions[connections[client]] = 3
+                        board['3'] = symbols[connections[client]]
+                        played = 1
+            elif row == "2":
+                if col == "1":
+                    if board['4'] == ' ':
+                        positions[connections[client]] = 4
+                        board['4'] = symbols[connections[client]]
+                        played = 1
 
-            elif col == "2":
-                if board['5'] == ' ':
-                    positions[connections[client]] = 5
-                    board['5'] = symbols[connections[client]]
-                    played = 1
+                elif col == "2":
+                    if board['5'] == ' ':
+                        positions[connections[client]] = 5
+                        board['5'] = symbols[connections[client]]
+                        played = 1
 
-            elif col == "3":
-                if board['6'] == ' ':
-                    positions[connections[client]] = 6
-                    board['6'] = symbols[connections[client]]
-                    played = 1
-        elif row == "3":
-            if col == "1":
-                if board['7'] == ' ':
-                    positions[connections[client]] = 7
-                    board['7'] = symbols[connections[client]]
-                    played = 1
+                elif col == "3":
+                    if board['6'] == ' ':
+                        positions[connections[client]] = 6
+                        board['6'] = symbols[connections[client]]
+                        played = 1
+            elif row == "3":
+                if col == "1":
+                    if board['7'] == ' ':
+                        positions[connections[client]] = 7
+                        board['7'] = symbols[connections[client]]
+                        played = 1
 
-            elif col == "2":
-                if board['8'] == ' ':
-                    positions[connections[client]] = 8
-                    board['8'] = symbols[connections[client]]
-                    played = 1
+                elif col == "2":
+                    if board['8'] == ' ':
+                        positions[connections[client]] = 8
+                        board['8'] = symbols[connections[client]]
+                        played = 1
 
-            elif col == "3":
-                if board['9'] == ' ':
-                    positions[connections[client]] = 9
-                    board['9'] = symbols[connections[client]]
-                    played = 1
-        if played == 0:
-            tcp_server.send_msg(client, "Invalid play \n")
+                elif col == "3":
+                    if board['9'] == ' ':
+                        positions[connections[client]] = 9
+                        board['9'] = symbols[connections[client]]
+                        played = 1
+            if played == 0:
+                tcp_server.send_msg(client, "Invalid play \n")
+            else:
+                plays = plays + 1
+                show_board()
+                turns(client)
+                if 5 <= plays < 9:
+                    verify_winner(client)
+                if plays == 9:
+                    tie_msg()
+                    reset_game()
         else:
-            plays = plays + 1
-            show_board()
-            turns(client)
-            if 5 <= plays < 9:
-                verify_winner(client)
-            if plays == 9:
-                tcp_server.send_msg(client, "It's a tie \n")
-                reset_game()
-
+            tcp_server.send_msg(client, "Please wait for your turn \n")
     else:
         tcp_server.send_msg(client, "Not enrolled in a game \n")
 
+
+def tie_msg():
+    for key in symbols:
+        tcp_server.send_msg(find_connection(key), "It's a tie \n")
 
 def winner_msg(symbol):
     winner = ''
     for key in symbols:
         if symbols[key] == symbol:
             winner = key
-        tcp_server.send_msg(find_connection(key), "Game over!" + winner + "wins")
+
+    for key in symbols:
+        tcp_server.send_msg(find_connection(key), "Game over! " + winner + " wins")
         players_statuses[key] = "READY"
 
     reset_game()
@@ -275,3 +285,5 @@ commands_handler = {
     'push': push
 }
 valid_commands = commands_handler.keys()
+
+
