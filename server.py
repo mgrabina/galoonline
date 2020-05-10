@@ -3,24 +3,28 @@ import threading
 from concurrent.futures.thread import ThreadPoolExecutor
 
 from src import tcp_server
-from src import game
+from src import logic
 
 
 def client_handler(client):
+    logic.menu(client)
     while True:
 
-        msg = tcp_server.recv_msg(client).split(game.command_separator)
+        msg = tcp_server.recv_msg(client).split(logic.command_separator)
         # Validate Command
-        if game.validate_command(msg):
-            tcp_server.send_msg(client, game.error_msg_prefix + "Invalid command")
+        if logic.validate_command(msg):
+            tcp_server.send_msg(client, logic.error_msg_prefix + "Invalid command")
             continue
         # Validate Registry
-        if game.validate_registration(client, msg):
-            tcp_server.send_msg(client, game.error_msg_prefix + "Please register first.")
+        if logic.validate_registration(client, msg):
+            tcp_server.send_msg(client, logic.error_msg_prefix + "Please register first.")
             continue
         # Then execute game action
 
-        threading.Thread(target=game.commands_handler.get(msg[0].lower()), args=(client, msg,)).start()
+        try:
+            threading.Thread(target=logic.commands_handler.get(msg[0].lower()), args=(client, msg,)).start()
+        except:
+            tcp_server.send_msg(client, "There was a problem procesing your request\n")
 
 
 server = tcp_server.start_server()
