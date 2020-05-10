@@ -12,14 +12,19 @@ target = '{}.{}.{}'.format(hostname, sld, tld)
 def connect():
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client.connect((server_ip, server_port))
-    print('target', target)
     return client
 
 
 def send_msg(client, msg):
     msg_to_send = msg.encode()
-    client.send(msg_to_send)
+    try:
+        client.send(msg_to_send)
+    except:
+        print("Connection problem with " + client + ". Could not send message: " + msg)
 
 
 def recv_response(client):
-    return client.recv(4096).decode()
+    try:
+        return client.recv(4096).decode()
+    except:
+        print("Connection problem with " + client + ". Could not recieve message.")
