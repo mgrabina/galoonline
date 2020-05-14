@@ -10,14 +10,14 @@ def client_handler(client):
     logic.menu(client)
     while True:
 
-        msg = tcp_server.recv_msg(client).split(logic.command_separator)
+        msg = tcp_server.recv_msg(client).split()
         # Validate Command
         if logic.validate_command(msg):
             tcp_server.send_msg(client, logic.error_msg_prefix + "Invalid command")
             continue
         # Validate Registry
         if logic.validate_registration(client, msg):
-            tcp_server.send_msg(client, logic.error_msg_prefix + "Please register first.")
+            tcp_server.send_msg(client, logic.error_msg_prefix + "Please register first. \n")
             continue
         # Then execute game action
 

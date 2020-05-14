@@ -4,6 +4,8 @@ from src import tcp_client
 import sys
 import threading
 import time
+from pip._vendor.distlib.compat import raw_input
+
 
 # Welcoming player
 client = tcp_client.connect()
@@ -30,10 +32,12 @@ notifications_thread.daemon = True
 notifications_thread.start()
 
 while True:
-    command = input()
+    command = raw_input()
     tcp_client.send_msg(client, command)
     response = tcp_client.recv_response(client)
     print(response)
-    if "exit" in command:
+    if str(response).startswith('Bye'):
         exit(0)
+
+
 
