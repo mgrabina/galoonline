@@ -1,4 +1,5 @@
 #!/usr/bin/python
+from pip._vendor.distlib.compat import raw_input
 
 from src import tcp_client
 import sys
@@ -30,7 +31,7 @@ notifications_thread.daemon = True
 notifications_thread.start()
 
 while True:
-    command = input()
+    command = raw_input()
     tcp_client.send_msg(client, command)
     response = tcp_client.recv_response(client)
     print(response)
