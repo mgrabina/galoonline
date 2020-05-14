@@ -5,8 +5,6 @@ from src import tcp_client
 import sys
 import threading
 import time
-from pip._vendor.distlib.compat import raw_input
-
 
 # Welcoming player
 client = tcp_client.connect()
@@ -31,6 +29,7 @@ def push_notification(client_conn):
 notifications_thread = threading.Thread(target=push_notification, args=(client,))
 notifications_thread.daemon = True
 notifications_thread.start()
+
 
 while True:
     command = raw_input()
