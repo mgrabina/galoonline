@@ -1,4 +1,5 @@
 #!/usr/bin/python
+from pip._vendor.distlib.compat import raw_input
 
 from src import tcp_client
 import sys
