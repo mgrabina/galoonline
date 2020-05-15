@@ -1,4 +1,6 @@
 #!/usr/bin/python
+import os
+
 from pip._vendor.distlib.compat import raw_input
 
 from src import tcp_client
@@ -16,16 +18,16 @@ entries = 0
 
 def background(client_conn):
     while True:
+        notification = None
         try:
             notification = tcp_client.recv_response(client_conn)
-            if notification:
-                print(notification)
-                if str(notification).startswith('Bye'):
-                    exit(0)
-
         except:
             print("Error getting new information.")
-        # time.sleep(1)
+
+        if notification:
+            print(notification)
+            if str(notification).startswith('Bye'):
+                os._exit(0)
 
 
 def manage_input(client_conn, input):
@@ -39,7 +41,6 @@ notifications_thread.start()
 
 while True:
     command = input()
-    print(command)
     if command:
         manage_input(client, command)
 

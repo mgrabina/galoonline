@@ -23,12 +23,15 @@ games = {}
 
 
 def validate_registration(client, msg):
-    return client not in connections.keys() and len(msg[0]) != 1
+    if msg and len(msg) > 0:
+        return client not in connections.keys() and len(msg[0]) != 1
+    return False
 
 
 def validate_command(msg):
-    return msg[0].lower() not in valid_commands
-
+    if msg and len(msg) > 0:
+        return msg[0].lower() not in valid_commands
+    return False
 
 def find_connection(username):
     for key in connections:
@@ -224,7 +227,11 @@ def menu(client):
 
 
 def logout(client, msg):
-    if players_statuses[connections[client]] == "READY":
+    if client not in connections:
+        tcp_server.send_msg(client, "Bye")
+        tcp_server.close_connection(client)
+        return
+    if connections[client] and players_statuses[connections[client]] == "READY":
         tcp_server.send_msg(client, "Bye " + connections[client])
         del players_statuses[connections[client]]
         del connections[client]

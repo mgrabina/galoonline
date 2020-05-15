@@ -4,7 +4,7 @@ import socket, sys
 import threading
 
 bind_ip = '127.0.0.1'
-bind_port = 9998
+bind_port = 9999
 msg_buffer = 1024
 
 
@@ -35,22 +35,24 @@ def start_handler(handler, client_sock):
     except:
         print("Could not handle sock.")
 
+
 def recv_msg(connection):
     try:
         return connection.recv(msg_buffer).decode()
     except:
-        print("Connection problem with " + connection + ". Could not recieve message.")
+        print("Connection problem with. Could not recieve message.")
 
 
 def send_msg(connection, msg):
     try:
         connection.send(msg.encode())
     except:
-        print("Connection problem with " + connection + ". Could not send message: " + msg)
+        print("Connection problem with. Could not send message: " + msg)
 
 
 def close_connection(connection):
     try:
+        print('Connection {} closed.'.format(connection))
         connection.close()
     except:
-        print("Could not close connection " + connection)
+        print("Could not close connection ")
