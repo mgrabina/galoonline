@@ -1,6 +1,5 @@
 #!/usr/bin/python
-from pip._vendor.distlib.compat import raw_input
-
+import os
 from src import tcp_client
 import threading
 
@@ -11,16 +10,17 @@ client = tcp_client.connect()
 
 def background(client_conn):
     while True:
+        notification = None
         try:
             notification = tcp_client.recv_response(client_conn)
-            if notification:
-                print(notification)
-                if str(notification).startswith('Bye'):
-                    exit(0)
-
 
         except:
             print("Error getting new information.")
+
+        if notification:
+            print(notification)
+            if str(notification).startswith('Bye'):
+                os._exit(0)
 
 
 

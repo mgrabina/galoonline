@@ -3,7 +3,10 @@
 import socket
 
 server_ip = '127.0.0.1'
+
 server_port = 9991
+server_port = 9994
+
 response_buffer_size = 4096;  # Recommended size
 hostname, sld, tld, port = 'www', 'tecnico', 'ulisboa.pt', 80
 target = '{}.{}.{}'.format(hostname, sld, tld)
@@ -20,7 +23,7 @@ def send_msg(client, msg):
     try:
         client.send(msg_to_send)
     except:
-        print("Connection problem with " + client + ". Could not send message: " + msg)
+        print("Connection problem with " + client + ". Could not send message")
 
 
 def recv_response(client):
