@@ -2,12 +2,6 @@ import numpy as np
 
 
 class Game:
-    board = [[' ', ' ', ' '], [' ', ' ', ' '], [' ', ' ', ' ']]
-    symbols = {}
-    moves = 0
-    positions = {}
-    active = ''
-
     def rand_symbols(self):
         rand = np.random.randint(2, size=1)
         if rand:
@@ -25,6 +19,12 @@ class Game:
             self.active = self.opponent_username
 
     def __init__(self, requester_connection, opponent_connection, requester_username, opponent_username):
+        self.board = [[' ', ' ', ' '], [' ', ' ', ' '], [' ', ' ', ' ']]
+        self.symbols = {}
+        self.moves = 0
+        self.positions = {}
+        self.active = ''
+
         self.requester_connection = requester_connection
         self.opponent_connection = opponent_connection
         self.requester_username = requester_username
