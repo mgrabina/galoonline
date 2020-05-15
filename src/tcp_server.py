@@ -4,7 +4,7 @@ import socket, sys
 import threading
 
 bind_ip = '127.0.0.1'
-bind_port = 9991
+bind_port = 9994
 msg_buffer = 1024
 
 
@@ -17,6 +17,7 @@ def start_server():
 
 
 def end_server(server: socket.socket):
+    server.shutdown(socket.SHUT_WR)
     server.close()
 
 

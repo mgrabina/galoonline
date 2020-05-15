@@ -20,7 +20,7 @@ def background(client_conn):
         if notification:
             print(notification)
             if str(notification).startswith('Bye'):
-                os._exit(0)
+                tcp_client.close_conn(client_conn)
 
 
 
@@ -34,9 +34,12 @@ notifications_thread.start()
 
 
 while True:
-    command = input()
-    if command:
-        manage_input(client, command)
-
-
+    try:
+        command = input()
+        if command:
+            manage_input(client, command)
+    except KeyboardInterrupt:
+        print("Interrupting... Bye!")
+    except:
+        print("Some unexpected error occurred.")
 
