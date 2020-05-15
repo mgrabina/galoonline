@@ -14,30 +14,34 @@ push_started = False
 entries = 0
 
 
-
-def push_notification(client_conn):
+def background(client_conn):
     while True:
         try:
             notification = tcp_client.recv_response(client_conn)
-            if notification != "UP TO DATE":
+            if notification:
                 print(notification)
+                if str(notification).startswith('Bye'):
+                    exit(0)
+
         except:
-            print("some error")
-        time.sleep(1)
+            print("Error getting new information.")
+        # time.sleep(1)
 
 
-notifications_thread = threading.Thread(target=push_notification, args=(client,))
+def manage_input(client_conn, input):
+    tcp_client.send_msg(client, input)
+
+
+notifications_thread = threading.Thread(target=background, args=(client,))
 notifications_thread.daemon = True
 notifications_thread.start()
 
 
 while True:
-    command = raw_input()
-    tcp_client.send_msg(client, command)
-    response = tcp_client.recv_response(client)
-    print(response)
-    if str(response).startswith('Bye'):
-        exit(0)
+    command = input()
+    print(command)
+    if command:
+        manage_input(client, command)
 
 
 
