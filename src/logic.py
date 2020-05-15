@@ -18,7 +18,7 @@ menu_commands = "Available commands:\n" \
                 "- Decline <username>: decline game\n" \
                 "- Move <row> <col> : new move\n" \
                 "- exit : exit game\n"
-welcome_message = "\n Welcome to Galo Online!\n"
+welcome_message = "\nWelcome to Galo Online!\n"
 games = {}
 
 
@@ -163,7 +163,7 @@ def new_move(client, msg):
     if len(msg) == 3:
         row = int(msg[1]) - 1
         col = int(msg[2]) - 1
-        if games:
+        if games[client]:
             current_game = games[client]
             if current_game.active == connections[client]:
                 if 0 <= row <= 2 and 0 <= col <= 2 and current_game.board[row][col] == ' ':

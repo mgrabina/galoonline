@@ -1,19 +1,11 @@
 #!/usr/bin/python
 import os
-
-from pip._vendor.distlib.compat import raw_input
-
 from src import tcp_client
-import sys
 import threading
-import time
 
 # Welcoming player
 client = tcp_client.connect()
-last_update = time.time()
-interval = 0.5
-push_started = False
-entries = 0
+
 
 
 def background(client_conn):
@@ -21,6 +13,7 @@ def background(client_conn):
         notification = None
         try:
             notification = tcp_client.recv_response(client_conn)
+
         except:
             print("Error getting new information.")
 
@@ -28,6 +21,7 @@ def background(client_conn):
             print(notification)
             if str(notification).startswith('Bye'):
                 os._exit(0)
+
 
 
 def manage_input(client_conn, input):
